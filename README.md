@@ -1,68 +1,102 @@
-🧠 AI Notes Generator
+# 🧠 AI Notes Generator
 
-Transform raw text, PDFs, topics, or study material into clean, structured, AI-powered notes using Google Gemini 1.5 Flash.
+<div align="center">
+
+### 🚀 AI-Powered Smart Study Notes Platform
+
+Transform raw text, PDFs, lecture notes, and study materials into structured AI-generated notes using **Google Gemini 1.5 Flash**.
+
+![PHP](https://img.shields.io/badge/PHP-8.1+-blue?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=for-the-badge)
+![Gemini AI](https://img.shields.io/badge/Gemini-AI-purple?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+</div>
+
+---
+
+# ✨ Overview
 
 Modern students waste hours manually creating notes.
-AI Notes Generator automates the entire workflow:
 
-Generate summaries instantly
-Extract key concepts
-Organize notes smartly
-Search everything in seconds
-Access notes anywhere
+**AI Notes Generator** automates the entire workflow by converting unstructured content into clean, organized, and intelligent study notes instantly.
 
-Built with PHP + MySQL + Gemini AI, this project combines a production-ready backend with a modern glassmorphism UI.
+### ✅ What It Can Do
+- Generate AI-powered summaries
+- Extract important concepts
+- Create structured study notes
+- Auto-generate titles & tags
+- Organize notes smartly
+- Search notes instantly
+- Track productivity analytics
 
-🚀 Live Capabilities
+Built with **PHP + MySQL + Gemini AI**, featuring a modern glassmorphism dashboard UI.
 
-✅ AI-generated study notes
-✅ Smart summaries & key points
-✅ Auto title generation
-✅ Tag extraction
-✅ Category management
-✅ Full authentication system
-✅ Pin & archive notes
-✅ Full-text search
-✅ Responsive dashboard
-✅ Analytics & usage statistics
-✅ Dark modern UI
+---
 
-📸 Preview
-🔐 Authentication
-Secure Login/Register
-Session-based authentication
-bcrypt password hashing
-🧠 AI Note Generation
+# 🚀 Features
+
+| Feature | Description |
+|---|---|
+| 🧠 AI Generation | Generate summaries, key points & concepts |
+| 🔐 Authentication | Secure login/register system |
+| 📂 Categories | Organize notes using folders |
+| 📌 Pin & Archive | Manage important notes easily |
+| 🔍 Search System | Fast MySQL FULLTEXT search |
+| 📊 Analytics | Track note generation statistics |
+| 📱 Responsive UI | Works on desktop & mobile |
+| 🎨 Modern Design | Glassmorphism dark interface |
+
+---
+
+# 📸 Modules
+
+## 🔐 Authentication
+- Secure Login/Register
+- Session-based authentication
+- bcrypt password hashing
+- Session protection
+
+---
+
+## 🧠 AI Note Generator
 
 Paste:
-
-Raw text
-Lecture content
-Research material
-Study topics
+- Raw text
+- Lecture content
+- Research material
+- Study topics
 
 Gemini AI automatically generates:
+- Smart titles
+- Summaries
+- Key points
+- Important concepts
+- AI tags
 
-Smart title
-Summary
-Key points
-Important concepts
-Tags
-📂 Dashboard
-Organized notes
-Category folders
-Search & filters
-Pinned notes
-Archive system
-📊 Analytics
+---
 
+## 📂 Dashboard
+- Organized notes
+- Category folders
+- Search & filters
+- Pinned notes
+- Archive system
+
+---
+
+## 📊 Analytics
 Track:
+- Total notes generated
+- Words processed
+- AI token usage
+- Productivity stats
 
-Notes generated
-Words processed
-AI token usage
-User activity
-🏗️ Project Structure
+---
+
+# 🏗️ Project Structure
+
+```bash
 AI-Notes-Generator/
 │
 ├── index.html
@@ -71,255 +105,179 @@ AI-Notes-Generator/
 ├── .env.example
 │
 ├── config/
-│   ├── config.php
-│   ├── database.php
-│   └── cors.php
-│
 ├── includes/
-│   ├── Auth.php
-│   ├── Gemini.php
-│   ├── Response.php
-│   └── Validator.php
-│
 ├── api/
-│   ├── auth/
-│   │   ├── login.php
-│   │   ├── register.php
-│   │   ├── logout.php
-│   │   └── me.php
-│   │
-│   ├── notes/
-│   │   ├── generate.php
-│   │   ├── read.php
-│   │   ├── update.php
-│   │   └── delete.php
-│   │
-│   ├── categories/
-│   │   └── index.php
-│   │
-│   └── stats/
-│       └── index.php
-│
 └── assets/
-    ├── css/style.css
-    └── js/
-        ├── api.js
-        ├── auth.js
-        └── dashboard.js
-⚡ Tech Stack
-Technology	Usage
-PHP 8.1+	Backend API
-MySQL 8	Database
-Gemini 1.5 Flash	AI Note Generation
-HTML5 / CSS3 / JavaScript	Frontend
-PDO	Secure database access
-cURL	Gemini API integration
-✨ Core Features
-🔐 Authentication System
-Register/Login functionality
-bcrypt password hashing
-Secure PHP sessions
-Session regeneration protection
-Generic authentication responses
-🧠 AI-Powered Notes
+```
 
-Generate:
+---
 
-Smart summaries
-Structured notes
-Key points
-Important concepts
-Auto-generated titles
-AI tags
+# ⚡ Tech Stack
 
-Powered by:
+| Technology | Usage |
+|---|---|
+| PHP 8.1+ | Backend |
+| MySQL 8 | Database |
+| Gemini 1.5 Flash | AI Processing |
+| HTML/CSS/JS | Frontend |
+| PDO | Secure Queries |
+| cURL | API Communication |
 
-Gemini 1.5 Flash API
-📂 Smart Organization
-Create categories
-Color-coded folders
-Pin important notes
-Archive old notes
-Quick access dashboard
-🔍 Advanced Search
+---
 
-Uses MySQL FULLTEXT indexing for:
+# 🔌 API Endpoints
 
-Fast searching
-Content filtering
-Keyword discovery
-📊 Analytics Dashboard
+## Authentication APIs
 
-Monitor:
+| Method | Endpoint |
+|---|---|
+| POST | `/api/auth/register.php` |
+| POST | `/api/auth/login.php` |
+| POST | `/api/auth/logout.php` |
+| GET | `/api/auth/me.php` |
 
-Total notes
-Total words processed
-AI token usage
-User productivity stats
-📱 Fully Responsive UI
-Mobile-friendly layout
-Sidebar navigation
-Hamburger menu
-Smooth animations
-Glassmorphism design system
-🔌 API Endpoints
+---
 
-All APIs return standardized JSON responses:
+## Notes APIs
 
-{
-  "success": true,
-  "message": "Request successful",
-  "data": {}
-}
-Authentication APIs
-Method	Endpoint	Description
-POST	/api/auth/register.php	Register user
-POST	/api/auth/login.php	Login user
-POST	/api/auth/logout.php	Logout
-GET	/api/auth/me.php	Current authenticated user
-Notes APIs
-Method	Endpoint	Description
-POST	/api/notes/generate.php	Generate AI notes
-GET	/api/notes/read.php	Fetch all notes
-GET	/api/notes/read.php?id=X	Fetch single note
-PUT	/api/notes/update.php	Update note
-DELETE	/api/notes/delete.php	Delete note
-Categories APIs
-Method	Endpoint	Description
-GET	/api/categories/index.php	List categories
-POST	/api/categories/index.php	Create category
-DELETE	/api/categories/index.php	Delete category
-Statistics APIs
-Method	Endpoint	Description
-GET	/api/stats/index.php	User statistics
-🛡️ Security Features
+| Method | Endpoint |
+|---|---|
+| POST | `/api/notes/generate.php` |
+| GET | `/api/notes/read.php` |
+| PUT | `/api/notes/update.php` |
+| DELETE | `/api/notes/delete.php` |
 
-✔ bcrypt password hashing (cost factor 12)
-✔ PDO prepared statements
-✔ SQL injection protection
-✔ Server-side validation
-✔ Session security
-✔ Same-origin request protection
-✔ X-Requested-With validation
-✔ CSRF-resistant architecture
-✔ Generic auth error responses
+---
 
-⚙️ Installation Guide
-1️⃣ Prerequisites
+# 🛡️ Security Features
 
-Install:
+✔ bcrypt password hashing  
+✔ PDO prepared statements  
+✔ SQL injection protection  
+✔ Session security  
+✔ CSRF-resistant architecture  
+✔ Server-side validation  
 
-PHP 8.1+
-MySQL 8+
-Apache / XAMPP / Laragon
-Gemini API Key
+---
 
-Required PHP Extensions:
+# ⚙️ Installation
 
-curl
-pdo_mysql
-2️⃣ Clone Repository
+## 1️⃣ Clone Repository
+
+```bash
 git clone https://github.com/your-username/AI-Notes-Generator.git
 cd AI-Notes-Generator
-3️⃣ Database Setup
-mysql -u root -p
+```
 
-Run:
+---
 
-source database.sql
+## 2️⃣ Database Setup
 
-OR
-
+```bash
 mysql -u root -p < database.sql
-4️⃣ Configure Environment
+```
 
-Copy:
+---
 
-cp .env.example .env
+## 3️⃣ Configure Environment
 
-Update .env:
+Copy `.env.example` → `.env`
 
+```env
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=ai-notes-generator
 DB_USER=root
 DB_PASS=your_password
 
-GEMINI_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=your_api_key
 GEMINI_MODEL=gemini-1.5-flash
-5️⃣ Run Project
-Option A — PHP Built-in Server
+```
+
+---
+
+## 4️⃣ Run Project
+
+### PHP Built-in Server
+
+```bash
 php -S localhost:8080
+```
 
 Open:
 
+```bash
 http://localhost:8080
-Option B — XAMPP / Laragon
-Move project into:
-htdocs/ (XAMPP)
-www/ (Laragon)
-Start:
-Apache
-MySQL
-Open:
-http://localhost/AI-Notes-Generator
-🎨 UI Design
+```
 
-The project uses:
+---
 
-Glassmorphism
-Animated gradients
-Modern dashboard layout
-Responsive mobile-first architecture
-Dark theme aesthetics
-📈 Future Improvements
+# 🎨 UI Design
 
-Planned upgrades:
+### Modern Glassmorphism Interface
+- Dark theme UI
+- Animated gradients
+- Mobile responsive layout
+- Smooth dashboard interactions
 
-PDF upload support
-OCR for handwritten notes
-Voice-to-notes
-AI quiz generation
-Export to PDF
-Multi-language support
-Markdown editor
-Collaborative notes
-AI flashcards
-Study planner integration
-💡 Ideal Use Cases
+---
 
-🎓 Students
-📚 Researchers
-🧠 Self-learners
-🏫 Educational institutes
-📝 Content creators
-💼 Professionals
+# 📈 Future Improvements
 
-🤝 Contributing
+- 📄 PDF Upload Support
+- ✍ OCR Handwriting Recognition
+- 🎤 Voice-to-Notes
+- 🧪 AI Quiz Generator
+- 📥 Export to PDF
+- 🌍 Multi-language Support
+- 🧠 AI Flashcards
+- 📅 Study Planner
+
+---
+
+# 💡 Ideal For
+
+🎓 Students  
+📚 Researchers  
+🧠 Self-Learners  
+🏫 Educational Institutes  
+💼 Professionals  
+
+---
+
+# 🤝 Contributing
 
 Contributions are welcome.
 
-Steps:
+### Steps
+1. Fork Repository
+2. Create Feature Branch
+3. Commit Changes
+4. Push Changes
+5. Open Pull Request
 
-Fork repository
-Create feature branch
-Commit changes
-Push branch
-Open Pull Request
-📜 License
+---
 
-MIT License
+# 📜 License
 
-Free to use, modify, and distribute.
+MIT License — Free to use and modify.
 
-⭐ Support
+---
+
+# ⭐ Support
 
 If you found this project useful:
 
-Star the repository
-Share with developers
-Contribute improvements
-👨‍💻 Author
+⭐ Star the repository  
+🔄 Share with developers  
+🤝 Contribute improvements  
 
-Developed by Prathamesh Sakoji
-BCA Student | AI Developer | Full Stack Developer
+---
+
+# 👨‍💻 Developer
+
+## Prathamesh Sakoji
+
+BCA Student • AI Developer • Full Stack Developer
+
+> Building practical AI-powered solutions for modern education.
