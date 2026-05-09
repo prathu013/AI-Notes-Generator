@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NoteForge — Transform any content into perfect AI-powered study notes. Upload PDFs, paste text, get structured notes in seconds.">
+  <title>NoteForge — AI-Powered Study Notes</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f0a500'/><text y='.85em' font-size='68' x='16' fill='%230a0a0a' font-weight='900' font-family='Arial'>N</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    // Prevent FOUC
+    (()=>{ document.documentElement.dataset.theme = localStorage.getItem('nf-theme')||'dark'; })();
+  </script>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <a class="navbar-brand" href="landing.html">
+    <div class="navbar-brand-icon">N</div>
+    Note<span>Forge</span>
+  </a>
+  <div class="navbar-links">
+    <button class="navbar-link active" onclick="window.location.href='landing.html'">Home</button>
+    <button class="navbar-link" onclick="window.location.href='generate.html'">Generate</button>
+    <button class="navbar-link" onclick="window.location.href='dashboard.html'">Dashboard</button>
+  </div>
+  <div class="navbar-actions">
+    <button class="btn btn-ghost btn-sm" onclick="window.location.href='index.html'">Sign In</button>
+    <button class="btn btn-primary btn-sm" onclick="window.location.href='index.html?tab=register'">Get Started</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<!-- ── LANDING PAGE ───────────────────────────────────────── -->
+<div class="landing">
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-h1">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      AI-Powered Learning Tool
+    </div>
+    <h1 class="hero-h1" id="hero-h1">
+      Transform any<br>content into<br>
+      <em>perfect study notes</em>
+    </h1>
+    <p class="hero-sub">
+      Upload PDFs, paste text, or enter a topic. NoteForge uses advanced NLP to generate
+      structured notes, key concepts, and exam-ready questions — in seconds.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" id="hero-start-btn" onclick="window.location.href='index.html?tab=register'">
+        Start Generating Free
+      </button>
+      <button class="btn btn-ghost" id="hero-how-btn" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+        See How It Works →
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">10K+</div><div class="hstat-label">Notes Generated</div></div>
+      <div class="hstat"><div class="hstat-val">3</div><div class="hstat-label">Input Modes</div></div>
+      <div class="hstat"><div class="hstat-val">4</div><div class="hstat-label">Note Formats</div></div>
+      <div class="hstat"><div class="hstat-val">100%</div><div class="hstat-label">Free to Start</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section-alt" id="features" aria-labelledby="features-h2">
+    <div class="section-inner">
+      <div class="section-center">
+        <div class="eyebrow"><span class="dot"></span> Featured</div>
+        <h2 class="section-h2" id="features-h2">Everything you need to<br><em>study smarter</em></h2>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon">📄</div>
+          <div class="feat-title">PDF Ingestion</div>
+          <div class="feat-desc">Upload any PDF — textbooks, research papers, slides. Our parser extracts and processes the content automatically.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧠</div>
+          <div class="feat-title">NLP Summarization</div>
+          <div class="feat-desc">Transformer-based models distill long content into concise, accurate summaries without losing key information.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔑</div>
+          <div class="feat-title">Keyword Extraction</div>
+          <div class="feat-desc">NLP-powered keyword detection surfaces the most important concepts and definitions from your material.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">❓</div>
+          <div class="feat-title">Exam Q&amp;A Generator</div>
+          <div class="feat-desc">Auto-generates likely exam questions with model answers — tailored to the content you uploaded.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📋</div>
+          <div class="feat-title">4 Note Formats</div>
+          <div class="feat-desc">Choose from Short Notes, Detailed Notes, Bullet Key Points, and Q&amp;A — or generate all at once.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📥</div>
+          <div class="feat-title">PDF Export</div>
+          <div class="feat-desc">Download beautifully formatted notes as PDF, save to your dashboard, or share with classmates.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how-it-works" aria-labelledby="how-h2">
+    <div class="section-inner">
+      <div class="section-center">
+        <div class="eyebrow"><span class="dot"></span> How It Works</div>
+        <h2 class="section-h2" id="how-h2">From input to notes<br><em>in 4 steps</em></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">
+            <div class="step-label">① Step</div>
+            <div class="step-icon">📎</div>
+          </div>
+          <div class="step-title">Input Content</div>
+          <div class="step-desc">Upload a PDF, paste raw text, or type a topic to search.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">
+            <div class="step-label">② Step</div>
+            <div class="step-icon">🎛️</div>
+          </div>
+          <div class="step-title">Choose Format</div>
+          <div class="step-desc">Select short notes, detailed, key points, Q&amp;A or all four.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">
+            <div class="step-label">③ Step</div>
+            <div class="step-icon">⚙️</div>
+          </div>
+          <div class="step-title">AI Processes</div>
+          <div class="step-desc">NLP engine analyses, summarises, and structures the content.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">
+            <div class="step-label">④ Step</div>
+            <div class="step-icon">🎉</div>
+          </div>
+          <div class="step-title">Get Your Notes</div>
+          <div class="step-desc">View, edit, download as PDF, or save to your dashboard.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FOOTER BAND -->
+  <section class="section section-alt" style="text-align:center">
+    <div class="section-inner">
+      <div class="eyebrow" style="justify-content:center"><span class="dot"></span> Get Started Free</div>
+      <h2 class="section-h2">Ready to study smarter?<br><em>Start in 30 seconds</em></h2>
+      <p style="color:var(--tx-2);font-size:.925rem;margin:1.1rem auto 2rem;max-width:400px;line-height:1.7">
+        No credit card needed. 30 free note generations every month, forever.
+      </p>
+      <button class="btn btn-primary btn-lg" id="cta-start-btn" onclick="window.location.href='index.html?tab=register'">
+        Create Free Account
+      </button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+    <div class="navbar-brand" style="cursor:default;font-size:.875rem">
+      <div class="navbar-brand-icon" style="width:24px;height:24px;font-size:.7rem">N</div>
+      Note<span>Forge</span>
+    </div>
+    <div style="font-size:.75rem;color:var(--tx-3)">© 2026 NoteForge. All rights reserved.</div>
+    <div style="display:flex;gap:1.25rem;font-size:.75rem;color:var(--tx-3)">
+      <a href="#" style="transition:color var(--fast)" onmouseover="this.style.color='var(--tx-1)'" onmouseout="this.style.color='var(--tx-3)'">Privacy</a>
+      <a href="#" style="transition:color var(--fast)" onmouseover="this.style.color='var(--tx-1)'" onmouseout="this.style.color='var(--tx-3)'">Terms</a>
+      <a href="#" style="transition:color var(--fast)" onmouseover="this.style.color='var(--tx-1)'" onmouseout="this.style.color='var(--tx-3)'">Contact</a>
+    </div>
+  </footer>
+
+</div><!-- /landing -->
+
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<script>
+  // Theme toggle
+  const tog = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+  tog.textContent = html.dataset.theme === 'dark' ? '🌙' : '☀️';
+  tog.addEventListener('click', () => {
+    const n = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = n;
+    localStorage.setItem('nf-theme', n);
+    tog.textContent = n === 'dark' ? '🌙' : '☀️';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NoteForge — Generate AI-powered study notes from PDFs, text, or topics.">
+  <title>Generate Notes — NoteForge</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f0a500'/><text y='.85em' font-size='68' x='16' fill='%230a0a0a' font-weight='900' font-family='Arial'>N</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    (()=>{ document.documentElement.dataset.theme = localStorage.getItem('nf-theme')||'dark'; })();
+  </script>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav class="navbar">
+  <a class="navbar-brand" href="landing.html">
+    <div class="navbar-brand-icon">N</div>
+    Note<span>Forge</span>
+  </a>
+  <div class="navbar-links">
+    <button class="navbar-link" onclick="window.location.href='landing.html'">Home</button>
+    <button class="navbar-link active">Generate</button>
+    <button class="navbar-link" onclick="window.location.href='dashboard.html'">Dashboard</button>
+  </div>
+  <div class="navbar-actions">
+    <div style="font-size:.8rem;color:var(--tx-2);font-weight:600" id="nav-welcome"></div>
+    <button class="btn btn-ghost btn-sm" onclick="window.location.href='dashboard.html'" id="nav-dash-btn">Dashboard</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<!-- ── GENERATE LAYOUT ────────────────────────────────────── -->
+<div class="gen-layout">
+
+  <!-- LEFT: INPUT PANEL -->
+  <aside class="gen-panel">
+    <div class="gen-panel-hd">
+      <div class="gen-panel-eyebrow">● Input &amp; Settings</div>
+      <div class="gen-panel-title">Configure your note generation</div>
+    </div>
+    <div class="gen-panel-body">
+
+      <!-- Input mode tabs -->
+      <div class="form-group">
+        <label class="form-label">Input Mode</label>
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab active" id="mode-text"  onclick="setMode('text')"  role="tab">TEXT</button>
+          <button class="mode-tab"        id="mode-pdf"   onclick="setMode('pdf')"   role="tab">PDF</button>
+          <button class="mode-tab"        id="mode-topic" onclick="setMode('topic')" role="tab">TOPIC</button>
+        </div>
+      </div>
+
+      <!-- TEXT input -->
+      <div id="input-text-area" class="form-group">
+        <label class="form-label" for="gen-input">Paste Your Content</label>
+        <textarea class="form-textarea" id="gen-input" rows="9" maxlength="15000"
+          placeholder="Paste lecture notes, textbook paragraphs, or any study material here…"
+          oninput="updateCharCount(this)"></textarea>
+        <div class="char-count" id="char-count">0 / 15,000</div>
+      </div>
+
+      <!-- PDF upload -->
+      <div id="input-pdf-area" class="form-group" style="display:none">
+        <label class="form-label">Upload PDF</label>
+        <div id="pdf-drop"
+          style="border:2px dashed var(--border);border-radius:var(--r-sm);padding:1.75rem;text-align:center;cursor:pointer;transition:border-color var(--base)"
+          onclick="document.getElementById('pdf-file').click()"
+          onmouseenter="this.style.borderColor='var(--gold)'" onmouseleave="this.style.borderColor='var(--border)'">
+          <div style="font-size:1.5rem;margin-bottom:.5rem">📄</div>
+          <div style="font-size:.82rem;color:var(--tx-2);font-weight:600">Click to upload PDF</div>
+          <div style="font-size:.72rem;color:var(--tx-3);margin-top:.2rem">Max 10 MB · PDF only</div>
+          <input type="file" id="pdf-file" accept=".pdf" style="display:none" onchange="handlePdf(this)">
+        </div>
+        <div id="pdf-name" style="font-size:.78rem;color:var(--gold-light);display:none;margin-top:.4rem"></div>
+        <div id="pdf-text-hidden" style="display:none"></div>
+      </div>
+
+      <!-- TOPIC input -->
+      <div id="input-topic-area" class="form-group" style="display:none">
+        <label class="form-label" for="gen-topic">Topic to Research</label>
+        <input class="form-input" type="text" id="gen-topic"
+          placeholder="e.g. Photosynthesis, World War II, Machine Learning…">
+        <div style="font-size:.72rem;color:var(--tx-3);margin-top:.3rem">
+          We'll generate a comprehensive note on this topic.
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group" id="category-group">
+        <label class="form-label" for="gen-category">Category (optional)</label>
+        <select class="form-select" id="gen-category">
+          <option value="">— No category —</option>
+        </select>
+      </div>
+
+      <!-- Credits display -->
+      <div class="credits-row" id="credits-row" style="display:none">
+        <span>Credits this month</span>
+        <span class="credits-val" id="credits-val">—</span>
+      </div>
+
+      <!-- Error -->
+      <div id="gen-error" class="form-error"></div>
+
+      <!-- Generate button -->
+      <button class="gen-btn" id="generate-btn" onclick="doGenerate()">
+        <span id="gen-btn-icon" style="font-size:1.1rem;line-height:1">✦</span>
+        <span id="gen-btn-text">Generate Notes</span>
+        <div class="spinner" id="gen-spinner" style="display:none;border-top-color:#0a0a0a;border-color:rgba(0,0,0,.2);border-top-color:#0a0a0a"></div>
+      </button>
+
+    </div>
+  </aside>
+
+  <!-- RIGHT: OUTPUT PANEL -->
+  <div class="gen-output">
+    <div class="gen-output-hd">
+      <div class="gen-output-eyebrow">● Generated Output</div>
+      <div class="output-tabs" role="tablist">
+        <button class="output-tab active" id="out-tab-summary"   onclick="switchOutTab('summary')"   role="tab">Summary</button>
+        <button class="output-tab"        id="out-tab-keypoints" onclick="switchOutTab('keypoints')" role="tab">Key Points</button>
+        <button class="output-tab"        id="out-tab-input"     onclick="switchOutTab('input')"     role="tab">Raw Input</button>
+        <button class="output-tab"        id="out-tab-tags"      onclick="switchOutTab('tags')"      role="tab">Tags</button>
+      </div>
+      <div class="output-actions" id="output-actions" style="display:none">
+        <button class="btn btn-ghost btn-sm" id="copy-btn"  onclick="copyOutput()">Copy</button>
+        <button class="btn btn-ghost btn-sm" id="dash-save-btn" onclick="window.location.href='dashboard.html'">Dashboard →</button>
+        <button class="btn btn-primary btn-sm" id="dl-pdf-btn" onclick="Toast.info('PDF export coming soon!')">↓ PDF</button>
+      </div>
+    </div>
+    <div class="gen-output-body" id="output-body">
+      <div class="output-empty">
+        <div class="output-empty-icon">✦</div>
+        <div class="output-empty-title">Your notes will appear here</div>
+        <div class="output-empty-desc">
+          Input your content on the left and click <strong>Generate Notes</strong>.
+          Notes are automatically saved to your account.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /gen-layout -->
+
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth-guard.js"></script>
+<script>
+// ── Theme ──────────────────────────────────────────────────
+const tog  = document.getElementById('theme-toggle');
+const html = document.documentElement;
+tog.textContent = html.dataset.theme === 'dark' ? '🌙' : '☀️';
+tog.addEventListener('click', () => {
+  const n = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = n; localStorage.setItem('nf-theme', n);
+  tog.textContent = n === 'dark' ? '🌙' : '☀️';
+});
+
+// ── Auth ready ─────────────────────────────────────────────
+document.addEventListener('nf:authed', async (e) => {
+  const u = e.detail;
+  const nw = document.getElementById('nav-welcome');
+  if (nw) nw.textContent = 'Hi, ' + u.username;
+  await loadCategories();
+  await loadCredits();
+});
+
+// ── Load categories ────────────────────────────────────────
+async function loadCategories() {
+  try {
+    const res = await API.categories.list();
+    const sel = document.getElementById('gen-category');
+    const cats = res.data || [];
+    cats.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.id;
+      o.textContent = c.name;
+      sel.appendChild(o);
+    });
+  } catch { /* silently ignore */ }
+}
+
+// ── Load credits remaining ─────────────────────────────────
+async function loadCredits() {
+  try {
+    const res = await API.stats.dashboard();
+    const { monthly_usage, monthly_limit } = res.data.stats;
+    const cr = document.getElementById('credits-row');
+    const cv = document.getElementById('credits-val');
+    cv.textContent = `${monthly_usage} / ${monthly_limit}`;
+    cr.style.display = '';
+    // Disable generate if maxed out
+    if (monthly_usage >= monthly_limit) {
+      const btn = document.getElementById('generate-btn');
+      btn.disabled = true;
+      document.getElementById('gen-btn-text').textContent = 'Monthly limit reached';
+    }
+  } catch { /* ignore */ }
+}
+
+// ── Input mode ─────────────────────────────────────────────
+function setMode(m) {
+  ['text','pdf','topic'].forEach(k => {
+    document.getElementById(`mode-${k}`).classList.toggle('active', k === m);
+    document.getElementById(`input-${k}-area`).style.display = k === m ? '' : 'none';
+  });
+}
+
+// ── Char count ─────────────────────────────────────────────
+function updateCharCount(el) {
+  const n = el.value.length;
+  const cc = document.getElementById('char-count');
+  cc.textContent = `${n.toLocaleString()} / 15,000`;
+  cc.classList.toggle('warn', n > 12000);
+}
+
+// ── PDF handler ────────────────────────────────────────────
+function handlePdf(input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  const fn   = document.getElementById('pdf-name');
+  fn.textContent = '✓ ' + file.name;
+  fn.style.display = '';
+  // PDF text extraction would need a server-side handler
+  // For now store filename; actual extraction done server-side via upload
+  Toast.info('PDF selected. The server will extract its text during generation.');
+}
+
+// ── State ──────────────────────────────────────────────────
+let currentTab = 'summary';
+let generatedNote = null;
+
+function switchOutTab(tab) {
+  currentTab = tab;
+  ['summary','keypoints','input','tags'].forEach(t =>
+    document.getElementById(`out-tab-${t}`).classList.toggle('active', t === tab));
+  if (generatedNote) renderTab(tab, generatedNote);
+}
+
+// ── GENERATE ────────────────────────────────────────────────
+async function doGenerate() {
+  const errEl  = document.getElementById('gen-error');
+  const btn    = document.getElementById('generate-btn');
+  const icon   = document.getElementById('gen-btn-icon');
+  const txtEl  = document.getElementById('gen-btn-text');
+  const spin   = document.getElementById('gen-spinner');
+
+  errEl.style.display = 'none';
+
+  // Get mode
+  const mode  = document.querySelector('.mode-tab.active').id.replace('mode-','');
+  let   text  = '';
+
+  if (mode === 'text') {
+    text = document.getElementById('gen-input').value.trim();
+  } else if (mode === 'topic') {
+    const topic = document.getElementById('gen-topic').value.trim();
+    if (!topic) { showErr('Please enter a topic.'); return; }
+    text = `Generate comprehensive study notes on the following topic:\n\n${topic}`;
+  } else if (mode === 'pdf') {
+    // PDF mode — text extraction must happen server-side
+    // For now, send a placeholder message
+    const pdfFile = document.getElementById('pdf-file').files[0];
+    if (!pdfFile) { showErr('Please select a PDF file.'); return; }
+    Toast.info('PDF text extraction is server-side. Using file name as demo input.');
+    text = `PDF document: ${pdfFile.name}. Please extract and summarise key content.`;
+  }
+
+  if (!text || text.length < 20) { showErr('Please enter at least 20 characters.'); return; }
+
+  const catId = document.getElementById('gen-category').value || null;
+
+  // Set loading state
+  btn.disabled = true; icon.style.display='none'; spin.style.display='';
+  txtEl.textContent = 'Generating…';
+  btn.classList.add('ai-pulse');
+
+  document.getElementById('output-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;color:var(--tx-2);font-size:.85rem">
+      <div class="spinner spinner-lg" style="border-top-color:var(--gold)"></div>
+      <div>Processing with AI…</div>
+    </div>
+  `;
+
+  try {
+    const payload = { text };
+    if (catId) payload.category_id = parseInt(catId);
+
+    const res = await API.notes.generate(payload);
+    generatedNote = res.data;
+
+    renderTab(currentTab, generatedNote);
+    document.getElementById('output-actions').style.display = '';
+    Toast.success('Notes generated and saved to your dashboard!');
+    await loadCredits();
+
+  } catch (err) {
+    showErr(err.message || 'Generation failed. Please try again.');
+    document.getElementById('output-body').innerHTML = `
+      <div class="output-empty">
+        <div class="output-empty-icon" style="opacity:.3">✕</div>
+        <div class="output-empty-title" style="color:var(--danger)">Generation failed</div>
+        <div class="output-empty-desc">${escHtml(err.message || 'Please try again.')}</div>
+      </div>
+    `;
+  } finally {
+    btn.disabled = false; icon.style.display=''; spin.style.display='none';
+    txtEl.textContent = 'Generate Notes';
+    btn.classList.remove('ai-pulse');
+  }
+}
+
+function showErr(msg) {
+  const e = document.getElementById('gen-error');
+  e.textContent = msg; e.style.display='block';
+}
+
+function renderTab(tab, note) {
+  const body = document.getElementById('output-body');
+  let h = '<div class="output-content">';
+
+  if (tab === 'summary') {
+    h += `
+      <div class="output-section">
+        <div class="output-sec-title">Title</div>
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:.85rem">${escHtml(note.title||'')}</div>
+        <div class="output-sec-title">AI Summary</div>
+        <div class="output-text">${escHtml(note.ai_summary||'No summary generated.')}</div>
+      </div>
+    `;
+  }
+
+  if (tab === 'keypoints') {
+    const kps = note.ai_key_points || [];
+    h += `
+      <div class="output-section">
+        <div class="output-sec-title">Key Points (${kps.length})</div>
+        <div class="output-kp-list" style="margin-top:.65rem">
+          ${kps.length
+            ? kps.map(k => `<div class="output-kp"><div class="output-kp-dot"></div><div>${escHtml(k)}</div></div>`).join('')
+            : '<div style="color:var(--tx-3);font-size:.85rem">No key points extracted.</div>'
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  if (tab === 'input') {
+    h += `
+      <div class="output-section">
+        <div class="output-sec-title">Your Original Input</div>
+        <div class="output-text" style="white-space:pre-wrap;max-height:420px;overflow-y:auto">${escHtml(note.raw_input||'')}</div>
+      </div>
+    `;
+  }
+
+  if (tab === 'tags') {
+    const tags = note.ai_tags || [];
+    h += `
+      <div class="output-section">
+        <div class="output-sec-title">AI-Generated Tags</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.65rem">
+          ${tags.length
+            ? tags.map(t => `<span class="badge badge-gold">${escHtml(t)}</span>`).join('')
+            : '<div style="color:var(--tx-3);font-size:.85rem">No tags generated.</div>'
+          }
+        </div>
+        <div style="margin-top:1rem">
+          <div class="output-sec-title">Stats</div>
+          <div class="qstat-list" style="margin-top:.5rem">
+            <div class="qstat-row"><span class="qstat-label">Word count</span><span class="qstat-val">${note.word_count?.toLocaleString()||'—'}</span></div>
+            <div class="qstat-row"><span class="qstat-label">Saved at</span><span class="qstat-val">${relativeTime(note.created_at)}</span></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = h + '</div>';
+}
+
+function copyOutput() {
+  navigator.clipboard.writeText(document.getElementById('output-body').innerText)
+    .then(() => Toast.success('Copied to clipboard!'))
+    .catch(() => Toast.error('Copy failed.'));
+}
+</script>
+</body>
+</html>

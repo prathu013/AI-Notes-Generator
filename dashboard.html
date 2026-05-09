@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NoteForge Dashboard — your AI-generated study notes.">
+  <title>Dashboard — NoteForge</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f0a500'/><text y='.85em' font-size='68' x='16' fill='%230a0a0a' font-weight='900' font-family='Arial'>N</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ── Skeleton loader ─────────────────────────────────── */
+    .skel {
+      background: linear-gradient(90deg, var(--bg-2) 25%, var(--bg-3) 50%, var(--bg-2) 75%);
+      background-size: 200% 100%;
+      animation: skelShimmer 1.4s infinite;
+      border-radius: var(--r-sm);
+    }
+
+    @keyframes skelShimmer {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
+    .skel-line {
+      height: 14px;
+      margin-bottom: 8px;
+    }
+
+    .skel-block {
+      height: 50px;
+    }
+
+    /* Loading overlay */
+    #dash-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: var(--bg-0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .load-logo {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .load-logo span {
+      color: var(--gold-light);
+    }
+
+    .load-sub {
+      font-size: .82rem;
+      color: var(--tx-3);
+    }
+  </style>
+  <script>
+    (() => { document.documentElement.dataset.theme = localStorage.getItem('nf-theme') || 'dark'; })();
+  </script>
+</head>
+
+<body>
+
+  <!-- Loading overlay (shown until data loads) -->
+  <div id="dash-loading">
+    <div class="spinner spinner-lg" style="border-top-color:var(--gold)"></div>
+    <div class="load-logo">Note<span>Forge</span></div>
+    <div class="load-sub">Loading your dashboard…</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ── NAVBAR ─────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar" style="opacity:0;transition:opacity .3s">
+    <div style="display:flex;align-items:center;gap:.65rem">
+      <button class="btn-icon" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <rect y="2" width="16" height="2" rx="1" />
+          <rect y="7" width="16" height="2" rx="1" />
+          <rect y="12" width="16" height="2" rx="1" />
+        </svg>
+      </button>
+      <a class="navbar-brand" href="landing.html">
+        <div class="navbar-brand-icon">N</div>
+        Note<span>Forge</span>
+      </a>
+    </div>
+    <div class="navbar-links">
+      <button class="navbar-link" onclick="window.location.href='landing.html'">Home</button>
+      <button class="navbar-link" onclick="window.location.href='generate.html'">Generate</button>
+      <button class="navbar-link active">Dashboard</button>
+    </div>
+    <div class="navbar-actions">
+      <div style="font-size:.8rem;color:var(--tx-2);font-weight:600" id="nav-welcome"></div>
+      <button class="btn btn-primary btn-sm" onclick="window.location.href='generate.html'">✦ Generate</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()" id="logout-btn">Sign Out</button>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+    </div>
+  </nav>
+
+  <!-- ── APP LAYOUT ─────────────────────────────────────────── -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar" style="opacity:0;transition:opacity .3s">
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" id="nav-overview" onclick="showView('overview')">
+          <span class="nav-icon">📊</span> Overview
+        </button>
+        <button class="nav-item" onclick="window.location.href='generate.html'">
+          <span class="nav-icon">✦</span> Generate Notes
+        </button>
+
+        <div class="nav-section-label" style="margin-top:.25rem">Library</div>
+        <button class="nav-item" id="nav-notes" onclick="showView('notes')">
+          <span class="nav-icon">📝</span> My Notes
+          <span class="nav-badge" id="count-notes">—</span>
+        </button>
+        <button class="nav-item" id="nav-uploads" onclick="showView('uploads')">
+          <span class="nav-icon">📎</span> Uploads
+          <span class="nav-badge" id="count-uploads">—</span>
+        </button>
+        <button class="nav-item" id="nav-qa" onclick="showView('qa')">
+          <span class="nav-icon">❓</span> Q&amp;A Bank
+          <span class="nav-badge" id="count-qa">—</span>
+        </button>
+        <button class="nav-item" id="nav-downloads" onclick="showView('downloads')">
+          <span class="nav-icon">📥</span> Downloads
+          <span class="nav-badge" id="count-downloads">—</span>
+        </button>
+
+        <div class="nav-section-label" style="margin-top:.25rem">Account</div>
+        <button class="nav-item" id="nav-settings" onclick="showView('settings')">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+        <div class="nav-section-label" id="section-admin" style="display:none; margin-top:.25rem; color:var(--danger)">
+          Admin Controls</div>
+        <button class="nav-item" id="nav-admin-dashboard" style="display:none; color:var(--danger);"
+          onclick="showView('admin-dashboard')">
+          <span class="nav-icon">📊</span> Platform Stats
+        </button>
+        <button class="nav-item" id="nav-admin-users" style="display:none; color:var(--danger);"
+          onclick="showView('admin-users')">
+          <span class="nav-icon">👥</span> Manage Users
+        </button>
+        <div class="nav-section-label" style="margin-top:.25rem"></div>
+        <button class="nav-item" onclick="doLogout()" style="color:var(--danger)">
+          <span class="nav-icon">🚪</span> Sign Out
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="usage-label">
+          <span>Monthly usage</span>
+          <span id="sb-usage">— / 30</span>
+        </div>
+        <div class="usage-track">
+          <div class="usage-fill" id="sb-usage-bar" style="width:0%"></div>
+        </div>
+        <div class="usage-sub" id="sb-usage-sub">Free Tier</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <main class="main-body" id="main-body" style="opacity:0;transition:opacity .3s">
+
+        <!-- ═══════ OVERVIEW ═══════ -->
+        <div id="view-overview">
+          <div class="page-header">
+            <div class="page-header-row">
+              <h1 class="page-h1">Dashboard</h1>
+              <button class="btn btn-primary btn-sm" onclick="window.location.href='generate.html'" id="dash-gen-btn">✦
+                Generate Notes</button>
+            </div>
+            <p class="page-sub" id="dash-welcome-sub">Loading your study activity…</p>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">📝</div>
+                <div class="stat-delta" id="st-delta-notes" style="visibility:hidden">+0</div>
+              </div>
+              <div class="stat-value" id="st-notes">—</div>
+              <div class="stat-label">Total Notes</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">📎</div>
+                <div class="stat-delta" id="st-delta-uploads" style="visibility:hidden">+0</div>
+              </div>
+              <div class="stat-value" id="st-uploads">—</div>
+              <div class="stat-label">AI Requests</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">📥</div>
+                <div class="stat-delta" id="st-delta-dl" style="visibility:hidden">+0</div>
+              </div>
+              <div class="stat-value" id="st-words">—</div>
+              <div class="stat-label">Words Processed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">❓</div>
+                <div class="stat-delta" id="st-delta-qa" style="visibility:hidden">+0</div>
+              </div>
+              <div class="stat-value" id="st-qa">—</div>
+              <div class="stat-label">Key Points Generated</div>
+            </div>
+          </div>
+
+          <!-- Recent notes table -->
+          <div class="section-card">
+            <div class="section-card-hd">
+              <div class="section-card-title">Recent Notes</div>
+              <button class="btn btn-ghost btn-sm" onclick="showView('notes')" id="view-all-btn">View All →</button>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="notes-table" id="recent-table" aria-label="Recent notes">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Words</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+            <div id="recent-empty" class="empty-state" style="display:none;padding:2rem">
+              <div class="empty-icon">📄</div>
+              <div class="empty-title">No notes yet</div>
+              <div class="empty-desc">Generate your first note to see it here.</div>
+              <button class="btn btn-primary btn-sm" style="margin-top:.75rem"
+                onclick="window.location.href='generate.html'">Generate Now →</button>
+            </div>
+          </div>
+
+          <!-- Bottom 2-col -->
+          <div class="dash-bottom">
+            <!-- Activity -->
+            <div class="section-card">
+              <div class="section-card-hd">
+                <div class="section-card-title">Recent Activity</div>
+              </div>
+              <div class="activity-list" id="activity-list">
+                <!-- Populated by JS -->
+              </div>
+              <div id="activity-empty" class="empty-state" style="display:none;padding:1.5rem">
+                <div class="empty-desc">No activity yet.</div>
+              </div>
+            </div>
+            <!-- Quick stats -->
+            <div class="section-card">
+              <div class="section-card-hd">
+                <div class="section-card-title">Account Summary</div>
+              </div>
+              <div class="qstat-list">
+                <div class="qstat-row">
+                  <span class="qstat-label">Username</span>
+                  <span class="qstat-val" id="qs-username">—</span>
+                </div>
+                <div class="qstat-row">
+                  <span class="qstat-label">Email</span>
+                  <span class="qstat-val" id="qs-email" style="font-size:.75rem">—</span>
+                </div>
+                <div class="qstat-row">
+                  <span class="qstat-label">This month</span>
+                  <span class="qstat-val gold" id="qs-monthly">— generations</span>
+                </div>
+                <div class="qstat-row">
+                  <span class="qstat-label">Pinned notes</span>
+                  <span class="qstat-val" id="qs-pinned">—</span>
+                </div>
+                <div class="qstat-row">
+                  <span class="qstat-label">Words processed</span>
+                  <span class="qstat-val" id="qs-words">—</span>
+                </div>
+                <div class="qstat-row">
+                  <span class="qstat-label">Plan</span>
+                  <span class="qstat-val gold">Free Tier</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /view-overview -->
+
+        <!-- ═══════ MY NOTES ═══════ -->
+        <div id="view-notes" style="display:none">
+          <div class="page-header">
+            <div class="page-header-row">
+              <h1 class="page-h1">My Notes</h1>
+              <div style="display:flex;gap:.65rem;align-items:center">
+                <div style="position:relative">
+                  <span
+                    style="position:absolute;left:.72rem;top:50%;transform:translateY(-50%);color:var(--tx-3);font-size:.8rem;pointer-events:none">🔍</span>
+                  <input type="search" id="notes-search" placeholder="Search notes…"
+                    style="padding:.48rem .9rem .48rem 2.1rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-full);color:var(--tx-1);font-size:.82rem;width:220px;transition:border-color var(--base)"
+                    oninput="debouncedSearch(this.value)" onfocus="this.style.borderColor='var(--gold)'"
+                    onblur="this.style.borderColor='var(--border)'">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="window.location.href='generate.html'"
+                  id="notes-gen-btn">✦ New Note</button>
+              </div>
+            </div>
+            <p class="page-sub" id="notes-count-label">Loading…</p>
+          </div>
+          <!-- Notes grid -->
+          <div class="notes-grid" id="notes-grid"></div>
+          <!-- Loading skeleton -->
+          <div id="notes-skeleton" style="display:none">
+            <div class="notes-grid">
+              ${[1,2,3,4,5,6].map(()=>`<div class="note-card" style="pointer-events:none">
+                <div class="skel skel-line" style="width:70%"></div>
+                <div class="skel skel-line" style="width:50%;margin-top:.35rem"></div>
+                <div class="skel skel-block" style="margin-top:.5rem"></div>
+              </div>`).join('')}
+            </div>
+          </div>
+          <div id="notes-empty" class="empty-state" style="display:none">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No notes found</div>
+            <div class="empty-desc">Try a different search, or generate your first note.</div>
+            <button class="btn btn-primary" style="margin-top:.75rem"
+              onclick="window.location.href='generate.html'">Generate Notes →</button>
+          </div>
+          <!-- Pagination -->
+          <div id="notes-pagination"
+            style="display:flex;gap:.5rem;justify-content:center;padding:1.25rem 0;flex-wrap:wrap"></div>
+        </div>
+
+        <!-- ═══════ UPLOADS ═══════ -->
+        <div id="view-uploads" style="display:none">
+          <div class="page-header">
+            <h1 class="page-h1">Uploads</h1>
+            <p class="page-sub">PDFs and documents you've uploaded</p>
+          </div>
+          <div class="empty-state">
+            <div class="empty-icon">📎</div>
+            <div class="empty-title">No uploads yet</div>
+            <div class="empty-desc">Upload a PDF on the Generate page to process it into notes.</div>
+            <button class="btn btn-primary" style="margin-top:.75rem"
+              onclick="window.location.href='generate.html'">Upload a PDF →</button>
+          </div>
+        </div>
+
+        <!-- ═══════ Q&A ═══════ -->
+        <div id="view-qa" style="display:none">
+          <div class="page-header">
+            <h1 class="page-h1">Q&amp;A Bank</h1>
+            <p class="page-sub">Exam questions extracted from your notes</p>
+          </div>
+          <div id="qa-list"></div>
+          <div id="qa-empty" class="empty-state">
+            <div class="empty-icon">❓</div>
+            <div class="empty-title">No Q&A yet</div>
+            <div class="empty-desc">Generate notes with Key Points enabled to build your Q&A bank.</div>
+          </div>
+        </div>
+
+        <!-- ═══════ DOWNLOADS ═══════ -->
+        <div id="view-downloads" style="display:none">
+          <div class="page-header">
+            <h1 class="page-h1">Downloads</h1>
+            <p class="page-sub">Your exported PDF notes</p>
+          </div>
+          <div class="empty-state">
+            <div class="empty-icon">📥</div>
+            <div class="empty-title">No downloads yet</div>
+            <div class="empty-desc">Export any note as PDF from the View Note modal.</div>
+          </div>
+        </div>
+
+        <!-- ═══════ SETTINGS ═══════ -->
+        <div id="view-settings" style="display:none">
+          <div class="page-header" style="margin-bottom: 2rem;">
+            <h1 class="page-h1">Settings</h1>
+            <p class="page-sub">Manage your account, preferences, and AI configurations</p>
+          </div>
+
+          <!-- Grid layout for settings -->
+          <div
+            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; max-width: 900px;">
+
+            <!-- Column 1 -->
+            <div style="display:flex;flex-direction:column;gap:1.5rem">
+              <!-- Profile -->
+              <div class="section-card">
+                <div class="section-card-title"
+                  style="margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between;">
+                  <span>Profile Details</span>
+                  <div>
+                    <button class="btn btn-ghost btn-xs" id="edit-profile-btn"
+                      onclick="toggleProfileEdit()">Edit</button>
+                    <button class="btn btn-primary btn-xs" id="save-profile-btn" style="display:none"
+                      onclick="saveProfile()">Save</button>
+                  </div>
+                </div>
+                <div
+                  style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                  <div
+                    style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-3); display:flex; align-items:center; justify-content:center; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
+                    <span id="s-avatar">V</span>
+                  </div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--tx-1);" id="s-display-name">User Name
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--gold);">Free Plan</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:.7rem">
+                  <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input class="form-input" id="s-username" readonly style="cursor:default;opacity:.7">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email address</label>
+                    <input class="form-input" id="s-email" readonly style="cursor:default;opacity:.7">
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Preferences -->
+              <div class="section-card">
+                <div class="section-card-title" style="margin-bottom:1rem;">🤖 AI Preferences</div>
+                <p style="font-size:.82rem;color:var(--tx-3);margin-bottom:1.25rem;">Customize how NoteForge generates
+                  your study notes.</p>
+                <div style="display:flex;flex-direction:column;gap:1rem">
+                  <div class="form-group">
+                    <label class="form-label">Default Summary Length</label>
+                    <select class="form-input">
+                      <option value="brief">Brief (~100 words)</option>
+                      <option value="standard" selected>Standard (~200 words)</option>
+                      <option value="comprehensive">Comprehensive (~400 words)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">AI Output Tone</label>
+                    <select class="form-input">
+                      <option value="academic" selected>Academic & Formal</option>
+                      <option value="casual">Casual & Conversational</option>
+                      <option value="eli5">Explain Like I'm 5 (ELI5)</option>
+                    </select>
+                  </div>
+                  <!-- Auto-tagging toggle -->
+                  <div style="display:flex;align-items:center;justify-content:space-between; margin-top: .5rem;">
+                    <div>
+                      <div style="font-size:.875rem;font-weight:600">Auto-Tagging</div>
+                      <div style="font-size:.78rem;color:var(--tx-3);margin-top:.1rem">Automatically assign tags to
+                        generated notes</div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Column 2 -->
+            <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+              <!-- Display & Appearance -->
+              <div class="section-card">
+                <div class="section-card-title" style="margin-bottom:1rem;">Display & Appearance</div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div>
+                      <div style="font-size:.875rem;font-weight:600">Dark Mode</div>
+                      <div style="font-size:.78rem;color:var(--tx-3);margin-top:.1rem">Toggle between dark and light
+                        theme</div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" id="settings-theme-chk" checked onchange="onSettingsTheme(this)">
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div>
+                      <div style="font-size:.875rem;font-weight:600">Compact Layout</div>
+                      <div style="font-size:.78rem;color:var(--tx-3);margin-top:.1rem">Reduce padding in tables and
+                        lists</div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox">
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notifications -->
+              <div class="section-card">
+                <div class="section-card-title" style="margin-bottom:1rem;">Notifications</div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div>
+                      <div style="font-size:.875rem;font-weight:600">Weekly Study Highlights</div>
+                      <div style="font-size:.78rem;color:var(--tx-3)">Receive a summary of notes generated this week
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox" checked>
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div>
+                      <div style="font-size:.875rem;font-weight:600">Product Updates</div>
+                      <div style="font-size:.78rem;color:var(--tx-3)">Hear about new AI features and platform updates
+                      </div>
+                    </div>
+                    <label class="toggle">
+                      <input type="checkbox">
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Data & Privacy -->
+              <div class="section-card">
+                <div class="section-card-title" style="margin-bottom:1rem;">Data & Privacy</div>
+                <div style="display:flex; flex-direction:column; gap: 1rem;">
+                  <button class="btn btn-ghost btn-sm"
+                    style="justify-content: flex-start; width: 100%; border: 1px solid var(--border);"
+                    onclick="Toast.info('Preparing data export...')">
+                    📥 Export All Note Data (JSON/CSV)
+                  </button>
+                  <button class="btn btn-ghost btn-sm"
+                    style="justify-content: flex-start; width: 100%; border: 1px solid var(--border);"
+                    onclick="Toast.info('Cache cleared successfully.')">
+                    🗑️ Clear App Cache
+                  </button>
+                </div>
+              </div>
+
+              <!-- Danger zone -->
+              <div class="section-card" style="border-color:rgba(239,68,68,.3); background: rgba(239,68,68,.02);">
+                <div class="section-card-title" style="margin-bottom:.75rem;color:var(--danger)">Danger Zone</div>
+                <p style="font-size:.82rem;color:var(--tx-2);margin-bottom:1rem">Signing out will end your current
+                  session. Deleting your account will permanently wipe all your generated notes.</p>
+                <div style="display:flex; gap:.5rem;">
+                  <button class="btn btn-danger btn-sm" style="flex:1;" onclick="doLogout()"
+                    id="settings-logout-btn">Sign Out</button>
+                  <button class="btn btn-ghost btn-sm"
+                    style="color:var(--danger); border: 1px solid rgba(239,68,68,.3);"
+                    onclick="if(confirm('Are you absolutely sure you want to delete your account?')) Toast.error('Account deletion is disabled in demo mode.')">Delete
+                    Account</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ ADMIN DASHBOARD ═══════ -->
+        <div id="view-admin-dashboard" style="display:none">
+          <div class="page-header">
+            <div class="page-header-row">
+              <h1 class="page-h1" style="color:var(--danger)">System Overview</h1>
+            </div>
+            <p class="page-sub">Monitor platform metrics and recent activity.</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">👥</div>
+              </div>
+              <div class="stat-value" id="st-admin-users">—</div>
+              <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">📝</div>
+              </div>
+              <div class="stat-value" id="st-admin-notes">—</div>
+              <div class="stat-label">Total Notes Generated</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">🧠</div>
+              </div>
+              <div class="stat-value" id="st-admin-reqs">—</div>
+              <div class="stat-label">API Requests</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon">⚡</div>
+              </div>
+              <div class="stat-value" id="st-admin-tokens">—</div>
+              <div class="stat-label">Total Tokens Used</div>
+            </div>
+          </div>
+          <div class="dash-bottom">
+            <div class="section-card">
+              <div class="section-card-hd">
+                <div class="section-card-title">Recent Users</div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="notes-table">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-users-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-card-hd">
+                <div class="section-card-title">Recent Notes</div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="notes-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>User</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-recent-notes-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ MANAGE USERS ═══════ -->
+        <div id="view-admin-users" style="display:none">
+          <div class="page-header">
+            <div class="page-header-row">
+              <h1 class="page-h1" style="color:var(--danger)">Manage Users</h1>
+            </div>
+            <p class="page-sub">View and manage all registered accounts.</p>
+          </div>
+          <div class="section-card">
+            <div style="overflow-x:auto">
+              <table class="notes-table" id="all-users-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Notes</th>
+                    <th>Joined</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="all-users-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center;padding:2rem;color:var(--tx-3)">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div><!-- /app-layout -->
+
+  <!-- ── NOTE DETAIL MODAL ───────────────────────────────── -->
+  <div class="modal-backdrop" id="note-modal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:640px">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Note</h2>
+        <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+      </div>
+      <div id="modal-body" style="font-size:.875rem"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/api.js?v=2"></script>
+  <script src="assets/js/auth-guard.js?v=2"></script>
+  <script>
+    // ============================================================
+    //  Dashboard JS — runs after api.js and auth-guard.js load
+    // ============================================================
+
+    // ── Theme ──────────────────────────────────────────────────
+    const tog = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    const stChk = document.getElementById('settings-theme-chk');
+    tog.textContent = html.dataset.theme === 'dark' ? '🌙' : '☀️';
+    stChk.checked = html.dataset.theme === 'dark';
+    tog.addEventListener('click', applyTheme);
+    function onSettingsTheme(c) { applyTheme(c.checked ? 'dark' : 'light'); }
+    function applyTheme(forceTheme) {
+      const n = typeof forceTheme === 'string' ? forceTheme
+        : (html.dataset.theme === 'dark' ? 'light' : 'dark');
+      html.dataset.theme = n;
+      localStorage.setItem('nf-theme', n);
+      tog.textContent = n === 'dark' ? '🌙' : '☀️';
+      stChk.checked = n === 'dark';
+    }
+
+    // ── State ──────────────────────────────────────────────────
+    let dashData = null;   // stores full API response
+    let allNotes = [];     // notes from My Notes view
+    let notesCurPage = 1;
+    let notesTotal = 0;
+    let notesSearch = '';
+    let currentUserId = null;
+
+    // Debounced search for My Notes
+    const debouncedSearch = debounce(q => {
+      notesSearch = q;
+      notesCurPage = 1;
+      loadNotesPage();
+    }, 350);
+
+    // ── Wait for auth guard ────────────────────────────────────
+    document.addEventListener('nf:authed', async (e) => {
+      const user = e.detail;
+      // Reveal navbar + sidebar + main (they're hidden until auth is done)
+      ['navbar', 'sidebar', 'main-body'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = '1';
+      });
+      // Responsive hamburger
+      checkHamburger();
+
+      // Populate settings profile fields
+      document.getElementById('s-username').value = user.username || '';
+      document.getElementById('s-email').value = user.email || '';
+      document.getElementById('nav-welcome').textContent = 'Hi, ' + (user.username || '');
+
+      // Populate new profile settings
+      if (document.getElementById('s-display-name')) {
+        document.getElementById('s-display-name').textContent = user.username || 'User Name';
+      }
+      if (document.getElementById('s-avatar')) {
+        document.getElementById('s-avatar').textContent = (user.username ? user.username.charAt(0).toUpperCase() : 'U');
+      }
+
+      // Show Admin Panel options if admin
+      currentUserId = user.id;
+      if (user.is_admin) {
+        const adminSec = document.getElementById('section-admin');
+        const adminDash = document.getElementById('nav-admin-dashboard');
+        const adminUsers = document.getElementById('nav-admin-users');
+        if (adminSec) adminSec.style.display = '';
+        if (adminDash) adminDash.style.display = '';
+        if (adminUsers) adminUsers.style.display = '';
+
+        // Also append to navbar as requested — Admin Mode Toggle
+        const navbarActions = document.querySelector('.navbar-actions');
+        if (navbarActions && !document.getElementById('top-nav-admin-mode')) {
+          const adminToggleContainer = document.createElement('div');
+          adminToggleContainer.id = 'top-nav-admin-mode';
+          adminToggleContainer.style.display = 'flex';
+          adminToggleContainer.style.alignItems = 'center';
+          adminToggleContainer.style.gap = '.55rem';
+          adminToggleContainer.style.marginRight = '.5rem';
+          adminToggleContainer.innerHTML = `
+        <span style="font-size:.68rem;font-weight:800;color:var(--danger);text-transform:uppercase;letter-spacing:.08em;user-select:none">Admin Mode</span>
+        <label class="toggle" title="Toggle Admin Interface">
+          <input type="checkbox" id="admin-mode-toggle" checked onchange="toggleAdminMode(this.checked)">
+          <span class="toggle-track"></span>
+        </label>
+      `;
+          navbarActions.insertBefore(adminToggleContainer, navbarActions.firstChild);
+        }
+      }
+
+      // Load dashboard data
+      await loadDashboard();
+
+      // Read view parameter to automatically show admin panel if redirected from login
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetView = urlParams.get('view');
+      if (targetView && (targetView === 'admin-dashboard' || targetView === 'admin-users') && user.is_admin) {
+        showView(targetView);
+      }
+
+      // Remove loading overlay
+      document.getElementById('dash-loading').style.display = 'none';
+    });
+
+    // ── Load dashboard data from API ───────────────────────────
+    async function loadDashboard() {
+      try {
+        const res = await API.stats.dashboard();
+        dashData = res.data;
+        renderDashboard(dashData);
+      } catch (err) {
+        Toast.error('Failed to load dashboard: ' + err.message);
+        document.getElementById('dash-loading').style.display = 'none';
+      }
+    }
+
+    // ── Render overview ────────────────────────────────────────
+    function renderDashboard(d) {
+      const { user, stats, notes, activity, categories } = d;
+
+      // Welcome
+      document.getElementById('dash-welcome-sub').textContent =
+        `Welcome back, ${user.username}. Here's your study activity.`;
+
+      // Stat cards
+      document.getElementById('st-notes').textContent = formatNum(stats.total_notes);
+      document.getElementById('st-uploads').textContent = formatNum(stats.ai_requests);
+      document.getElementById('st-words').textContent = formatNum(stats.total_words);
+      document.getElementById('st-qa').textContent = formatNum(stats.questions);
+
+      // Sidebar counts
+      document.getElementById('count-notes').textContent = stats.total_notes;
+      document.getElementById('count-uploads').textContent = 0;
+      document.getElementById('count-qa').textContent = stats.questions;
+      document.getElementById('count-downloads').textContent = stats.downloads;
+
+      // Sidebar usage bar
+      const pct = Math.min(100, Math.round((stats.monthly_usage / stats.monthly_limit) * 100));
+      document.getElementById('sb-usage').textContent = `${stats.monthly_usage} / ${stats.monthly_limit}`;
+      document.getElementById('sb-usage-bar').style.width = pct + '%';
+      document.getElementById('sb-usage-sub').textContent =
+        `Free Tier · ${stats.monthly_limit - stats.monthly_usage} credits left`;
+
+      // Quick stats
+      document.getElementById('qs-username').textContent = user.username;
+      document.getElementById('qs-email').textContent = user.email;
+      document.getElementById('qs-monthly').textContent = `${stats.monthly_usage} / ${stats.monthly_limit} this month`;
+      document.getElementById('qs-pinned').textContent = stats.pinned;
+      document.getElementById('qs-words').textContent = formatNum(stats.total_words) + ' words';
+
+      // Recent notes table
+      renderRecentTable(notes);
+
+      // Activity feed
+      renderActivity(activity);
+    }
+
+    function renderRecentTable(notes) {
+      const tbody = document.getElementById('recent-tbody');
+      const empty = document.getElementById('recent-empty');
+      const table = document.getElementById('recent-table');
+
+      if (!notes || !notes.length) {
+        table.style.display = 'none';
+        empty.style.display = '';
+        return;
+      }
+      table.style.display = '';
+      empty.style.display = 'none';
+
+      tbody.innerHTML = notes.slice(0, 8).map(n => `
+    <tr>
+      <td>
+        <div class="nt-title">${escHtml(n.title)}</div>
+        ${n.ai_summary ? `<div class="nt-sub">${escHtml(n.ai_summary.substring(0, 60))}…</div>` : ''}
+      </td>
+      <td>
+        ${n.category_name
+          ? `<span class="badge badge-gold" style="--c:${n.category_color || 'var(--gold)'}">${escHtml(n.category_name)}</span>`
+          : '<span class="badge badge-muted">—</span>'}
+      </td>
+      <td><span class="xs muted">${n.word_count ? n.word_count.toLocaleString() : '—'}</span></td>
+      <td style="white-space:nowrap"><span class="xs muted">${relativeTime(n.created_at)}</span></td>
+      <td>
+        <div style="display:flex;gap:.35rem">
+          <button class="btn btn-ghost btn-xs" onclick="openModal(${n.id})" id="view-note-${n.id}">View</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteNote(${n.id},this)" id="del-note-${n.id}">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+    }
+
+    function renderActivity(activity) {
+      const el = document.getElementById('activity-list');
+      const empty = document.getElementById('activity-empty');
+      if (!activity || !activity.length) {
+        el.innerHTML = '';
+        empty.style.display = '';
+        return;
+      }
+      empty.style.display = 'none';
+      const colors = { success: 'var(--gold-light)', error: 'var(--danger)' };
+      el.innerHTML = activity.map(a => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${colors[a.status] || 'var(--tx-3)'}"></div>
+      <div>
+        <div class="activity-text">
+          ${a.status === 'success'
+          ? `Generated notes${a.note_title ? ` for <strong>${escHtml(a.note_title)}</strong>` : ''}`
+          : `AI request failed${a.note_title ? ` — <strong>${escHtml(a.note_title)}</strong>` : ''}`
+        }
+        </div>
+        <div class="activity-time">${relativeTime(a.created_at)}</div>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    // ── My Notes view ──────────────────────────────────────────
+    async function loadNotesPage() {
+      const grid = document.getElementById('notes-grid');
+      const empty = document.getElementById('notes-empty');
+      const paginEl = document.getElementById('notes-pagination');
+      const label = document.getElementById('notes-count-label');
+
+      grid.innerHTML = '<div style="color:var(--tx-3);font-size:.85rem;padding:1rem">Loading…</div>';
+      empty.style.display = 'none';
+      paginEl.innerHTML = '';
+
+      try {
+        const res = await API.notes.list({ search: notesSearch, page: notesCurPage, limit: 12 });
+        const { notes, total, total_pages, page } = res.data;
+        notesTotal = total;
+
+        label.textContent = `${total} note${total !== 1 ? 's' : ''}${notesSearch ? ` for "${notesSearch}"` : ''}`;
+
+        if (!notes.length) {
+          grid.innerHTML = '';
+          empty.style.display = '';
+          return;
+        }
+
+        grid.innerHTML = notes.map(n => `
+      <div class="note-card" onclick="openModal(${n.id})" id="nc-${n.id}" role="article">
+        <div class="note-card-top">
+          <div class="note-title">${escHtml(n.title)}${n.is_pinned ? ' 📌' : ''}</div>
+          <div class="note-actions">
+            <button class="btn-icon" style="font-size:.75rem" title="Delete"
+              onclick="event.stopPropagation();deleteNote(${n.id},this)" id="del-nc-${n.id}">🗑</button>
+          </div>
+        </div>
+        <div class="note-summary">${n.ai_summary ? escHtml(n.ai_summary.substring(0, 120)) + '…' : '<em style="color:var(--tx-3)">No summary</em>'}</div>
+        <div class="note-meta">
+          ${n.category_name
+            ? `<span class="badge badge-gold">${escHtml(n.category_name)}</span>`
+            : '<span class="badge badge-muted">Uncategorised</span>'}
+          <span style="margin-left:auto">${relativeTime(n.created_at)}</span>
+        </div>
+      </div>
+    `).join('');
+
+        // Pagination
+        if (total_pages > 1) {
+          let btns = '';
+          for (let i = 1; i <= total_pages; i++) {
+            btns += `<button class="btn ${i === page ? 'btn-primary' : 'btn-ghost'} btn-sm"
+          onclick="notesCurPage=${i};loadNotesPage()" id="pag-${i}">${i}</button>`;
+          }
+          paginEl.innerHTML = btns;
+        }
+
+        // Build Q&A view if on that view
+        buildQA(notes);
+
+      } catch (err) {
+        grid.innerHTML = '';
+        Toast.error('Could not load notes: ' + err.message);
+      }
+    }
+
+    // ── Q&A builder ────────────────────────────────────────────
+    function buildQA(notes) {
+      const qalist = document.getElementById('qa-list');
+      const qaempty = document.getElementById('qa-empty');
+      const items = notes.filter(n => n.ai_key_points && n.ai_key_points.length);
+      if (!items.length) { qalist.innerHTML = ''; qaempty.style.display = ''; return; }
+      qaempty.style.display = 'none';
+      qalist.innerHTML = items.map(n => `
+    <div class="section-card" style="margin-bottom:.85rem">
+      <div class="section-card-title" style="margin-bottom:.75rem">${escHtml(n.title)}</div>
+      <div class="output-kp-list">
+        ${n.ai_key_points.map(kp => `
+          <div class="output-kp"><div class="output-kp-dot"></div><div>${escHtml(kp)}</div></div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+    }
+
+    // ── Open note modal (fetch full note from API) ─────────────
+    async function openModal(id) {
+      document.getElementById('modal-title').textContent = 'Loading…';
+      document.getElementById('modal-body').innerHTML =
+        '<div style="display:flex;justify-content:center;padding:2rem"><div class="spinner" style="border-top-color:var(--gold)"></div></div>';
+      document.getElementById('note-modal').classList.add('open');
+
+      try {
+        const res = await API.notes.get(id);
+        const n = res.data;
+
+        document.getElementById('modal-title').textContent = n.title;
+        let html = `
+      <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        ${n.category_name ? `<span class="badge badge-gold">${escHtml(n.category_name)}</span>` : ''}
+        <span class="xs muted">${relativeTime(n.created_at)}</span>
+        <span class="xs muted">· ${n.word_count?.toLocaleString() || 0} words</span>
+        ${n.is_pinned ? '<span class="badge badge-info">📌 Pinned</span>' : ''}
+      </div>
+    `;
+
+        if (n.ai_summary) {
+          html += `
+        <div style="margin-bottom:1rem">
+          <div class="output-sec-title">AI Summary</div>
+          <div class="output-text">${escHtml(n.ai_summary)}</div>
+        </div>
+      `;
+        }
+
+        if (n.ai_key_points && n.ai_key_points.length) {
+          html += `
+        <div style="margin-bottom:1rem">
+          <div class="output-sec-title">Key Points</div>
+          <div class="output-kp-list" style="margin-top:.55rem">
+            ${n.ai_key_points.map(kp => `<div class="output-kp"><div class="output-kp-dot"></div><div>${escHtml(kp)}</div></div>`).join('')}
+          </div>
+        </div>
+      `;
+        }
+
+        if (n.ai_tags && n.ai_tags.length) {
+          html += `
+        <div style="margin-bottom:1rem">
+          <div class="output-sec-title">Tags</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem">
+            ${n.ai_tags.map(t => `<span class="badge badge-muted">${escHtml(t)}</span>`).join('')}
+          </div>
+        </div>
+      `;
+        }
+
+        html += `
+      <div style="display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <button class="btn btn-danger btn-sm" onclick="deleteNote(${n.id},this);closeModal()" id="modal-del-btn">Delete</button>
+        <button class="btn btn-ghost" onclick="closeModal()" id="modal-close-btn">Close</button>
+        <button class="btn btn-primary" onclick="Toast.info('PDF export coming soon!')" id="modal-pdf-btn">↓ PDF</button>
+      </div>
+    `;
+
+        document.getElementById('modal-body').innerHTML = html;
+      } catch (err) {
+        document.getElementById('modal-body').innerHTML =
+          `<div style="color:var(--danger);font-size:.85rem">Error: ${escHtml(err.message)}</div>`;
+      }
+    }
+
+    function closeModal() { document.getElementById('note-modal').classList.remove('open'); }
+    document.getElementById('note-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+    // ── Delete note ────────────────────────────────────────────
+    async function deleteNote(id, btn) {
+      if (!confirm('Delete this note? This cannot be undone.')) return;
+      if (btn) btn.disabled = true;
+      try {
+        await API.notes.delete(id);
+        Toast.success('Note deleted.');
+        // Refresh data
+        await loadDashboard();
+        if (document.getElementById('view-notes').style.display !== 'none') {
+          await loadNotesPage();
+        }
+      } catch (err) {
+        Toast.error('Delete failed: ' + err.message);
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // ── View switching ─────────────────────────────────────────
+    const VIEWS = ['overview', 'notes', 'uploads', 'qa', 'downloads', 'settings', 'admin-dashboard', 'admin-users'];
+    function showView(v) {
+      VIEWS.forEach(id => {
+        document.getElementById(`view-${id}`).style.display = id === v ? '' : 'none';
+        const nav = document.getElementById(`nav-${id}`);
+        if (nav) nav.classList.toggle('active', id === v);
+      });
+      if (v === 'notes' || v === 'qa') loadNotesPage();
+      if (v === 'admin-dashboard') loadAdminDashboard();
+      if (v === 'admin-users') loadAllUsers();
+      closeSidebar();
+      // Animate
+      const body = document.getElementById('main-body');
+      body.style.opacity = '0';
+      requestAnimationFrame(() => { body.style.transition = 'opacity .2s'; body.style.opacity = '1'; });
+    }
+
+    // ── Sidebar ────────────────────────────────────────────────
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('show');
+    }
+    function checkHamburger() {
+      const hb = document.getElementById('hamburger-btn');
+      if (hb) hb.style.display = window.innerWidth <= 900 ? '' : 'none';
+    }
+    window.addEventListener('resize', checkHamburger);
+
+    // ── Admin Functions ────────────────────────────────────────
+    async function loadAdminDashboard() {
+      try {
+        const res = await API.admin.dashboard();
+        const { stats, recentUsers, recentNotes } = res.data;
+
+        document.getElementById('st-admin-users').textContent = formatNum(stats.totalUsers);
+        document.getElementById('st-admin-notes').textContent = formatNum(stats.totalNotes);
+        document.getElementById('st-admin-reqs').textContent = formatNum(stats.totalRequests);
+        document.getElementById('st-admin-tokens').textContent = formatNum(stats.totalTokens);
+
+        document.getElementById('recent-users-tbody').innerHTML = recentUsers.map(u => `
+      <tr>
+        <td><strong>${escHtml(u.username)}</strong></td>
+        <td><span class="xs muted">${escHtml(u.email)}</span></td>
+        <td><span class="xs muted">${relativeTime(u.created_at)}</span></td>
+      </tr>
+    `).join('') || `<tr><td colspan="3" class="muted">No recent users</td></tr>`;
+
+        document.getElementById('admin-recent-notes-tbody').innerHTML = recentNotes.map(n => `
+      <tr>
+        <td><strong>${escHtml(n.title)}</strong></td>
+        <td><span class="badge badge-muted">${escHtml(n.username)}</span></td>
+        <td><span class="xs muted">${relativeTime(n.created_at)}</span></td>
+      </tr>
+    `).join('') || `<tr><td colspan="3" class="muted">No recent notes</td></tr>`;
+      } catch (err) { Toast.error('Failed to load admin dashboard.'); }
+    }
+
+    async function loadAllUsers() {
+      const tbody = document.getElementById('all-users-tbody');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;">Loading...</td></tr>';
+      try {
+        const res = await API.admin.users();
+        const users = res.data.users;
+        tbody.innerHTML = users.map(u => `
+      <tr>
+        <td class="muted xs">${u.id}</td>
+        <td>
+          <div style="font-weight:600">${escHtml(u.username)}</div>
+          <div class="xs muted">${escHtml(u.email)}</div>
+        </td>
+        <td>${u.note_count}</td>
+        <td><span class="xs muted">${relativeTime(u.created_at)}</span></td>
+        <td>${u.is_admin ? '<span class="badge" style="background:rgba(239,68,68,0.15);color:var(--danger)">Admin</span>' : '<span class="badge badge-muted">User</span>'}</td>
+        <td>${u.status === 'active' ? '<span class="badge" style="background:rgba(34,197,94,0.15);color:#22c55e">Active</span>' : '<span class="badge" style="background:rgba(239,68,68,0.15);color:var(--danger)">Disabled</span>'}</td>
+        <td>
+          <div style="display:flex;gap:.25rem;align-items:center">
+            ${u.id !== currentUserId ? `
+              <label class="toggle" title="${u.is_admin ? 'Revoke Admin' : 'Make Admin'}" style="margin-right:.25rem">
+                <input type="checkbox" ${u.is_admin ? 'checked' : ''} onchange="toggleAdmin(${u.id}, this.checked ? 1 : 0)">
+                <span class="toggle-track"></span>
+              </label>
+              <button class="btn ${u.status === 'active' ? 'btn-danger' : 'btn-primary'} btn-xs" 
+                onclick="toggleUserStatus(${u.id}, '${escHtml(u.username)}', '${u.status}')">
+                ${u.status === 'active' ? 'Delete' : 'Restore'}
+              </button>
+            ` : '<span class="muted xs">Current</span>'}
+          </div>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="7" class="muted text-center">No users</td></tr>`;
+      } catch (err) { Toast.error('Load users failed.'); tbody.innerHTML = ''; }
+    }
+
+    async function toggleAdmin(id, isAdmin) {
+      try {
+        await API.admin.toggleAdmin(id, isAdmin);
+        Toast.success(isAdmin ? 'User is now an admin.' : 'Admin rights revoked.');
+        loadAllUsers();
+      } catch (err) { Toast.error(err.message); }
+    }
+
+    async function toggleUserStatus(id, username, currentStatus) {
+      const action = currentStatus === 'active' ? 'Disable' : 'Enable';
+      if (!confirm(`${action} account for ${username}?`)) return;
+      try {
+        await API.admin.deleteUser(id); // This now toggles status in backend
+        Toast.success(`User ${action}d successfully.`);
+        loadAllUsers();
+      } catch (err) { Toast.error(err.message); }
+    }
+
+    function toggleAdminMode(isOn) {
+      const adminSec = document.getElementById('section-admin');
+      const adminDash = document.getElementById('nav-admin-dashboard');
+      const adminUsers = document.getElementById('nav-admin-users');
+
+      const display = isOn ? '' : 'none';
+      if (adminSec) adminSec.style.display = display;
+      if (adminDash) adminDash.style.display = display;
+      if (adminUsers) adminUsers.style.display = display;
+
+      // If turning off while on an admin view, go to overview
+      const activeView = VIEWS.find(v => document.getElementById(`view-${v}`).style.display !== 'none');
+      if (!isOn && (activeView === 'admin-dashboard' || activeView === 'admin-users')) {
+        showView('overview');
+      }
+
+      Toast.info(isOn ? 'Admin Mode: Enabled' : 'Admin Mode: Disabled');
+    }
+
+    // ── Logout ─────────────────────────────────────────────────
+    async function doLogout() {
+      try { await API.auth.logout(); } catch { }
+      Toast.info('Signed out.');
+      setTimeout(() => window.location.replace('index.html'), 900);
+    }
+    // ── Profile Settings ───────────────────────────────────────
+    let isEditingProfile = false;
+    function toggleProfileEdit() {
+      const btnEdit = document.getElementById('edit-profile-btn');
+      const btnSave = document.getElementById('save-profile-btn');
+      const inpUser = document.getElementById('s-username');
+      const inpEmail = document.getElementById('s-email');
+
+      isEditingProfile = !isEditingProfile;
+
+      if (isEditingProfile) {
+        btnEdit.textContent = 'Cancel';
+        btnSave.style.display = 'inline-flex';
+        inpUser.removeAttribute('readonly');
+        inpEmail.removeAttribute('readonly');
+        inpUser.style.cursor = 'text';
+        inpEmail.style.cursor = 'text';
+        inpUser.style.opacity = '1';
+        inpEmail.style.opacity = '1';
+        inpUser.focus();
+      } else {
+        // Cancel: revert to state
+        btnEdit.textContent = 'Edit';
+        btnSave.style.display = 'none';
+        inpUser.setAttribute('readonly', 'true');
+        inpEmail.setAttribute('readonly', 'true');
+        inpUser.style.cursor = 'default';
+        inpEmail.style.cursor = 'default';
+        inpUser.style.opacity = '.7';
+        inpEmail.style.opacity = '.7';
+
+        // reset values
+        if (dashData && dashData.user) {
+          inpUser.value = dashData.user.username;
+          inpEmail.value = dashData.user.email;
+        }
+      }
+    }
+
+    async function saveProfile() {
+      const username = document.getElementById('s-username').value.trim();
+      const email = document.getElementById('s-email').value.trim();
+      const btnSave = document.getElementById('save-profile-btn');
+
+      if (!username || !email) {
+        Toast.error('Username and email are required.');
+        return;
+      }
+
+      btnSave.disabled = true;
+      btnSave.textContent = 'Saving...';
+
+      try {
+        const res = await API.auth.update({ username, email });
+        Toast.success('Profile updated successfully!');
+
+        // Update local state
+        if (dashData && dashData.user) {
+          dashData.user = res.data;
+          document.getElementById('s-avatar').textContent = res.data.username.charAt(0).toUpperCase();
+          document.getElementById('s-display-name').textContent = res.data.username;
+          document.getElementById('qs-username').textContent = res.data.username;
+          document.getElementById('qs-email').textContent = res.data.email;
+        }
+
+        // Stop editing mode
+        toggleProfileEdit();
+      } catch (err) {
+        Toast.error(err.message || 'Failed to update profile.');
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = 'Save';
+      }
+    }
+
+  </script>
+</body>
+
+</html>

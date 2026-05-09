@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in or create your NoteForge account — AI-powered study notes.">
+  <title>NoteForge — Sign In / Create Account</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f0a500'/><text y='.85em' font-size='68' x='16' fill='%230a0a0a' font-weight='900' font-family='Arial'>N</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Theme must apply before any rendering to prevent flash -->
+  <script>
+    document.documentElement.dataset.theme = localStorage.getItem('nf-theme') || 'dark';
+  </script>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav class="navbar">
+  <a class="navbar-brand" href="landing.html">
+    <div class="navbar-brand-icon">N</div>
+    Note<span>Forge</span>
+  </a>
+  <div class="navbar-links">
+    <button class="navbar-link" onclick="window.location.href='landing.html'">Home</button>
+    <button class="navbar-link" onclick="window.location.href='generate.html'">Generate</button>
+    <button class="navbar-link" onclick="window.location.href='dashboard.html'">Dashboard</button>
+  </div>
+  <div class="navbar-actions">
+    <button class="btn btn-ghost btn-sm" id="nav-signin-btn">Sign In</button>
+    <button class="btn btn-primary btn-sm" id="nav-register-btn">Get Started</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     SIGN IN PANEL
+══════════════════════════════════════════════════════════ -->
+<div class="auth-page" id="login-page">
+  <!-- Left marketing panel -->
+  <div class="auth-left">
+    <div class="auth-eyebrow">● Welcome Back</div>
+    <h2>Study smarter with<br><em>AI-powered notes</em></h2>
+    <p class="auth-left-desc">
+      Sign in to access your personalised dashboard, notes history, and
+      continue generating AI-powered study material.
+    </p>
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(240,165,0,.12);color:var(--gold-light)">📄</div>
+        <div>
+          <div class="auth-perk-title">Unlimited PDF uploads</div>
+          <div class="auth-perk-desc">Upload any textbook or lecture PDF for instant notes.</div>
+        </div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(96,165,250,.12);color:var(--info)">📋</div>
+        <div>
+          <div class="auth-perk-title">4 note formats</div>
+          <div class="auth-perk-desc">Short notes, detailed, key points, and exam Q&amp;A.</div>
+        </div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(34,197,94,.12);color:var(--success)">📥</div>
+        <div>
+          <div class="auth-perk-title">PDF export &amp; history</div>
+          <div class="auth-perk-desc">All your notes saved and accessible anytime.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Right form panel -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <h1 class="auth-box-title">Sign In</h1>
+      <p class="auth-box-sub">
+        New to NoteForge?
+        <button class="auth-link" id="goto-register-1">Create an account</button>
+      </p>
+
+      <!-- Google SSO placeholder -->
+      <button class="google-btn" id="google-signin-btn" type="button">
+        <svg class="google-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider">or continue with email</div>
+
+      <form class="auth-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input class="form-input" type="email" id="login-email" name="email"
+            placeholder="prathamesh@example.com" autocomplete="email" required>
+          <span class="form-error" id="login-email-error"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input class="form-input" type="password" id="login-password" name="password"
+            placeholder="••••••••" autocomplete="current-password" required>
+          <span class="form-error" id="login-password-error"></span>
+          <div class="forgot-link" id="forgot-link">Forgot password? Reset it →</div>
+        </div>
+        <div id="login-general-error" class="form-error" role="alert"></div>
+        <button type="submit" class="btn btn-primary auth-submit" id="login-btn">
+          <span id="login-btn-text">Sign In to NoteForge</span>
+          <div class="spinner" id="login-spinner" style="display:none"></div>
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account?
+        <button class="auth-link" id="goto-register-2">Create one →</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CREATE ACCOUNT PANEL
+══════════════════════════════════════════════════════════ -->
+<div class="auth-page" id="register-page" style="display:none">
+  <!-- Left marketing panel -->
+  <div class="auth-left">
+    <div class="auth-eyebrow">● Get Started Free</div>
+    <h2>Your AI study<br><em>companion awaits</em></h2>
+    <p class="auth-left-desc">
+      Join thousands of students using NoteForge to generate structured notes,
+      key concepts, and exam questions automatically.
+    </p>
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(240,165,0,.12);color:var(--gold-light)">🆓</div>
+        <div>
+          <div class="auth-perk-title">Free to start</div>
+          <div class="auth-perk-desc">30 note generations per month, no credit card needed.</div>
+        </div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(96,165,250,.12);color:var(--info)">⚡</div>
+        <div>
+          <div class="auth-perk-title">Instant results</div>
+          <div class="auth-perk-desc">Notes generated in seconds using state-of-the-art NLP.</div>
+        </div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon" style="background:rgba(34,197,94,.12);color:var(--success)">🔒</div>
+        <div>
+          <div class="auth-perk-title">Secure &amp; private</div>
+          <div class="auth-perk-desc">Your documents are encrypted and never shared.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Right form panel -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <h1 class="auth-box-title">Create Account</h1>
+      <p class="auth-box-sub">
+        Already have an account?
+        <button class="auth-link" id="goto-login-1">Sign in</button>
+      </p>
+
+      <!-- Google SSO placeholder -->
+      <button class="google-btn" id="google-register-btn" type="button">
+        <svg class="google-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign up with Google
+      </button>
+
+      <div class="auth-divider">or create with email</div>
+
+      <form class="auth-form" id="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input class="form-input" type="text" id="reg-name" name="username"
+            placeholder="Prathamesh Sakaji" autocomplete="name" required minlength="3">
+          <span class="form-error" id="reg-name-error"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input class="form-input" type="email" id="reg-email" name="email"
+            placeholder="prathamesh@example.com" autocomplete="email" required>
+          <span class="form-error" id="reg-email-error"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password</label>
+          <input class="form-input" type="password" id="reg-password" name="password"
+            placeholder="Min. 8 characters" autocomplete="new-password" required minlength="8">
+          <span class="form-error" id="reg-password-error"></span>
+        </div>
+        <div id="reg-general-error" class="form-error" role="alert"></div>
+        <button type="submit" class="btn btn-primary auth-submit" id="reg-btn">
+          <span id="reg-btn-text">Create Free Account</span>
+          <div class="spinner" id="reg-spinner" style="display:none"></div>
+        </button>
+      </form>
+
+      <p class="auth-terms">
+        By signing up, you agree to our <a href="#">Terms</a> &middot; <a href="#">Privacy Policy</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- FORGOT PASSWORD PAGE -->
+<!-- ========================================== -->
+<div class="auth-page" id="forgot-page" style="display:none">
+  <div class="auth-left">
+    <div class="auth-eyebrow">● Account Recovery</div>
+    <h2>Lost your password?<br><em>We've got you</em></h2>
+    <p class="auth-left-desc">
+      Enter the email address associated with your account and we'll send you a link to reset your password.
+    </p>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <h1 class="auth-box-title">Reset Password</h1>
+      <p class="auth-box-sub">
+        Remembered it?
+        <button class="auth-link" id="goto-login-from-forgot">Sign in</button>
+      </p>
+
+      <form class="auth-form" id="forgot-form" novalidate style="margin-top:2rem">
+        <div class="form-group">
+          <label class="form-label" for="forgot-email">Email Address</label>
+          <input class="form-input" type="email" id="forgot-email" name="email"
+            placeholder="prathamesh@example.com" autocomplete="email" required>
+          <span class="form-error" id="forgot-email-error"></span>
+        </div>
+        <div id="forgot-general-error" class="form-error" role="alert"></div>
+        <div id="forgot-success-msg" style="display:none; color:var(--success); font-size:0.9rem; margin-bottom:1rem; padding:1rem; background:rgba(34,197,94,0.1); border-radius:8px; line-height:1.4; word-break:break-all;"></div>
+        <button type="submit" class="btn btn-primary auth-submit" id="forgot-btn">
+          <span id="forgot-btn-text">Send Reset Link</span>
+          <div class="spinner" id="forgot-spinner" style="display:none"></div>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ENTER NEW PASSWORD PAGE (Reset via token) -->
+<!-- ========================================== -->
+<div class="auth-page" id="reset-page" style="display:none">
+  <div class="auth-left">
+    <div class="auth-eyebrow">● Account Security</div>
+    <h2>Secure your<br><em>account</em></h2>
+    <p class="auth-left-desc">
+      Please enter a new, strong password for your NoteForge account.
+    </p>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <h1 class="auth-box-title">Create New Password</h1>
+      <p class="auth-box-sub">
+        Choose a strong password with at least 8 characters.
+      </p>
+
+      <form class="auth-form" id="reset-form" novalidate style="margin-top:2rem">
+        <input type="hidden" id="reset-token" name="token">
+        <div class="form-group">
+          <label class="form-label" for="reset-password">New Password</label>
+          <input class="form-input" type="password" id="reset-password" name="password"
+            placeholder="Min. 8 characters" autocomplete="new-password" required minlength="8">
+          <span class="form-error" id="reset-password-error"></span>
+        </div>
+        <div id="reset-general-error" class="form-error" role="alert"></div>
+        <button type="submit" class="btn btn-primary auth-submit" id="reset-btn">
+          <span id="reset-btn-text">Update Password</span>
+          <div class="spinner" id="reset-spinner" style="display:none"></div>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ── SCRIPTS: api.js MUST load first ────────────────────── -->
+<script src="assets/js/api.js?v=3"></script>
+<script>
+// ============================================================
+//  NoteForge Auth Page — Self-Contained Logic
+//  Loaded AFTER api.js so API object is always available
+// ============================================================
+
+// ── 1. Toast helper ────────────────────────────────────────
+function showToast(msg, type) {
+  const icons = { success:'✓', error:'✕', info:'ℹ' };
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + (type || 'info');
+  t.innerHTML = '<span style="font-weight:800">' + (icons[type]||'•') + '</span><span>' + msg + '</span>';
+  c.appendChild(t);
+  setTimeout(function() {
+    t.classList.add('hiding');
+    setTimeout(function() { t.remove(); }, 350);
+  }, 3500);
+}
+
+// ── 2. Form error helpers ──────────────────────────────────
+function showFieldError(id, msg) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function clearAllErrors() {
+  document.querySelectorAll('.form-error').forEach(function(el) {
+    el.textContent = '';
+    el.style.display = 'none';
+  });
+}
+function setSubmitting(id, spinId, txtId, busy, busyLabel, idleLabel) {
+  var btn  = document.getElementById(id);
+  var spin = document.getElementById(spinId);
+  var txt  = document.getElementById(txtId);
+  if (btn)  btn.disabled        = busy;
+  if (spin) spin.style.display  = busy ? '' : 'none';
+  if (txt)  txt.textContent     = busy ? busyLabel : idleLabel;
+}
+
+// ── 3. Page switching ──────────────────────────────────────
+function showPage(page) {
+  var lp = document.getElementById('login-page');
+  var rp = document.getElementById('register-page');
+  var fp = document.getElementById('forgot-page');
+  var rs = document.getElementById('reset-page');
+
+  if(lp) lp.style.display = (page === 'login') ? 'grid' : 'none';
+  if(rp) rp.style.display = (page === 'register') ? 'grid' : 'none';
+  if(fp) fp.style.display = (page === 'forgot') ? 'grid' : 'none';
+  if(rs) rs.style.display = (page === 'reset') ? 'grid' : 'none';
+
+  let newUrl = '?tab=' + page;
+  
+  // if we are showing reset page, keep the reset_token in URL
+  const resetToken = new URLSearchParams(window.location.search).get('reset_token');
+  if (page === 'reset' && resetToken) {
+    newUrl = '?reset_token=' + resetToken;
+  }
+  
+  history.replaceState(null, '', newUrl);
+  clearAllErrors();
+  window.scrollTo(0, 0);
+}
+// Expose globally for any legacy calls
+window.showPage  = showPage;
+window.switchTab = showPage;
+
+// ── 4. Theme toggle ────────────────────────────────────────
+var tog  = document.getElementById('theme-toggle');
+var html = document.documentElement;
+tog.textContent = html.dataset.theme === 'dark' ? '🌙' : '☀️';
+tog.onclick = function() {
+  var n = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = n;
+  localStorage.setItem('nf-theme', n);
+  tog.textContent = n === 'dark' ? '🌙' : '☀️';
+};
+
+// ── 5. Wire nav & switch buttons ───────────────────────────
+document.getElementById('nav-signin-btn')  .onclick = function() { showPage('login');    };
+document.getElementById('nav-register-btn').onclick = function() { showPage('register'); };
+document.getElementById('goto-register-1') .onclick = function() { showPage('register'); };
+document.getElementById('goto-register-2') .onclick = function() { showPage('register'); };
+document.getElementById('goto-login-1')    .onclick = function() { showPage('login');    };
+
+var forgotLink = document.getElementById('forgot-link');
+if(forgotLink) {
+    forgotLink.onclick = function() {
+        showPage('forgot');
+    };
+}
+
+var gotoLoginForgot = document.getElementById('goto-login-from-forgot');
+if(gotoLoginForgot) {
+    gotoLoginForgot.onclick = function() {
+        showPage('login');
+    };
+}
+
+// ── 6. Google button placeholders ─────────────────────────
+document.getElementById('google-signin-btn')  .onclick = function() {
+  showToast('Google Sign-In is not yet configured. Please use email/password.', 'info');
+};
+document.getElementById('google-register-btn').onclick = function() {
+  showToast('Google Sign-Up is not yet configured. Please use email/password.', 'info');
+};
+
+// ── 7. Read ?tab= from URL and init page ──────────────────
+var urlParams = new URLSearchParams(window.location.search);
+var initTab = urlParams.get('tab');
+var resetToken = urlParams.get('reset_token');
+
+if (resetToken) {
+    document.getElementById('reset-token').value = resetToken;
+    showPage('reset');
+} else {
+    showPage(initTab === 'register' ? 'register' : 'login');
+}
+
+// ── 8. Check if already logged in (background, non-blocking) ──
+var dest = (new URLSearchParams(window.location.search)).get('redirect') || 'dashboard.html';
+API.auth.me().then(function() {
+  window.location.replace(dest);
+}).catch(function() { /* Not logged in — stay on page */ });
+
+// ══════════════════════════════════════════════════════════
+//  LOGIN FORM SUBMIT
+// ══════════════════════════════════════════════════════════
+document.getElementById('login-form').onsubmit = async function(e) {
+  e.preventDefault();
+  clearAllErrors();
+
+  var email    = document.getElementById('login-email').value.trim();
+  var password = document.getElementById('login-password').value;
+
+  // Client-side validation
+  var ok = true;
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    showFieldError('login-email-error', 'Please enter a valid email address.');
+    ok = false;
+  }
+  if (!password) {
+    showFieldError('login-password-error', 'Password is required.');
+    ok = false;
+  }
+  if (!ok) return;
+
+  setSubmitting('login-btn', 'login-spinner', 'login-btn-text',
+    true, 'Signing in…', 'Sign In to NoteForge');
+
+  try {
+    const res = await API.auth.login({ email: email, password: password });
+    showToast('Welcome back! Redirecting to dashboard…', 'success');
+    var is_admin = res.data && res.data.is_admin;
+    var finalDest = (is_admin && dest === 'dashboard.html') ? 'dashboard.html?view=admin-dashboard' : dest;
+    setTimeout(function() { window.location.replace(finalDest); }, 900);
+  } catch (err) {
+    setSubmitting('login-btn', 'login-spinner', 'login-btn-text',
+      false, '', 'Sign In to NoteForge');
+
+    if (err.errors) {
+      Object.entries(err.errors).forEach(function(entry) {
+        var f = entry[0], m = entry[1];
+        showFieldError('login-' + f + '-error', Array.isArray(m) ? m[0] : m);
+      });
+    } else {
+      showFieldError('login-general-error',
+        err.message || 'Login failed. Please check your credentials and try again.');
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  REGISTER FORM SUBMIT
+// ══════════════════════════════════════════════════════════
+document.getElementById('register-form').onsubmit = async function(e) {
+  e.preventDefault();
+  clearAllErrors();
+
+  var username = document.getElementById('reg-name').value.trim();
+  var email    = document.getElementById('reg-email').value.trim();
+  var password = document.getElementById('reg-password').value;
+
+  // Client-side validation
+  var ok = true;
+  if (!username || username.length < 3) {
+    showFieldError('reg-name-error', 'Full name must be at least 3 characters.');
+    ok = false;
+  }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    showFieldError('reg-email-error', 'Please enter a valid email address.');
+    ok = false;
+  }
+  if (!password || password.length < 8) {
+    showFieldError('reg-password-error', 'Password must be at least 8 characters.');
+    ok = false;
+  }
+  if (!ok) return;
+
+  setSubmitting('reg-btn', 'reg-spinner', 'reg-btn-text',
+    true, 'Creating account…', 'Create Free Account');
+
+  try {
+    await API.auth.register({ username: username, email: email, password: password });
+    showToast('Account created! Taking you to the dashboard…', 'success');
+    setTimeout(function() { window.location.replace('dashboard.html'); }, 900);
+  } catch (err) {
+    setSubmitting('reg-btn', 'reg-spinner', 'reg-btn-text',
+      false, '', 'Create Free Account');
+
+    var fieldMap = { username:'reg-name', email:'reg-email', password:'reg-password' };
+    if (err.errors) {
+      Object.entries(err.errors).forEach(function(entry) {
+        var f = entry[0], m = entry[1];
+        var errId = (fieldMap[f] || ('reg-' + f)) + '-error';
+        showFieldError(errId, Array.isArray(m) ? m[0] : m);
+      });
+    } else {
+      showFieldError('reg-general-error',
+        err.message || 'Registration failed. Please try again.');
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  FORGOT PASSWORD FORM SUBMIT
+// ══════════════════════════════════════════════════════════
+var forgotForm = document.getElementById('forgot-form');
+if (forgotForm) {
+  forgotForm.onsubmit = async function(e) {
+    e.preventDefault();
+    clearAllErrors();
+    document.getElementById('forgot-success-msg').style.display = 'none';
+
+    var email = document.getElementById('forgot-email').value.trim();
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      showFieldError('forgot-email-error', 'Please enter a valid email address.');
+      return;
+    }
+
+    setSubmitting('forgot-btn', 'forgot-spinner', 'forgot-btn-text',
+      true, 'Sending…', 'Send Reset Link');
+
+    try {
+      const res = await API.auth.forgotPassword({ email: email });
+      setSubmitting('forgot-btn', 'forgot-spinner', 'forgot-btn-text', false, '', 'Send Reset Link');
+      
+      var successEl = document.getElementById('forgot-success-msg');
+      successEl.innerHTML = '<strong>' + res.message + '</strong><br><br><a href="' + res.data.reset_link + '" style="color:var(--primary);text-decoration:underline;">Click here to reset your password</a>';
+      successEl.style.display = 'block';
+    } catch (err) {
+      setSubmitting('forgot-btn', 'forgot-spinner', 'forgot-btn-text', false, '', 'Send Reset Link');
+      if (err.errors) {
+        Object.entries(err.errors).forEach(function(entry) {
+          var f = entry[0], m = entry[1];
+          showFieldError('forgot-' + f + '-error', Array.isArray(m) ? m[0] : m);
+        });
+      } else {
+        showFieldError('forgot-general-error', err.message || 'Failed to send reset link.');
+      }
+    }
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+//  RESET PASSWORD FORM SUBMIT
+// ══════════════════════════════════════════════════════════
+var resetForm = document.getElementById('reset-form');
+if (resetForm) {
+  resetForm.onsubmit = async function(e) {
+    e.preventDefault();
+    clearAllErrors();
+
+    var token = document.getElementById('reset-token').value;
+    var password = document.getElementById('reset-password').value;
+
+    if (!password || password.length < 8) {
+      showFieldError('reset-password-error', 'Password must be at least 8 characters.');
+      return;
+    }
+
+    setSubmitting('reset-btn', 'reset-spinner', 'reset-btn-text',
+      true, 'Updating…', 'Update Password');
+
+    try {
+      const res = await API.auth.resetPassword({ token: token, password: password });
+      setSubmitting('reset-btn', 'reset-spinner', 'reset-btn-text', false, '', 'Update Password');
+      showToast(res.message, 'success');
+      
+      // Redirect to login after successful reset
+      setTimeout(function() {
+        window.location.replace('index.html?tab=login');
+      }, 1500);
+    } catch (err) {
+      setSubmitting('reset-btn', 'reset-spinner', 'reset-btn-text', false, '', 'Update Password');
+      if (err.errors) {
+        Object.entries(err.errors).forEach(function(entry) {
+          var f = entry[0], m = entry[1];
+          showFieldError('reset-' + f + '-error', Array.isArray(m) ? m[0] : m);
+        });
+      } else {
+        showFieldError('reset-general-error', err.message || 'Failed to reset password.');
+      }
+    }
+  };
+}
+</script>
+</body>
+</html>
